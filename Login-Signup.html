@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            width: 400px;
+            max-width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            transition: all 0.5s ease;
+            min-height: 420px; /* Base height for login */
+        }
+        
+        .container.show-signup {
+            min-height: 520px; /* Increased height for signup */
+        }
+        
+        .form-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .form {
+            position: absolute;
+            width: 100%;
+            padding: 10px;
+            transition: all 0.6s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .login-form {
+            left: 0;
+            height: 100%;
+            justify-content: space-between;
+        }
+        
+        .signup-form {
+            left: 100%;
+            height: 100%;
+            justify-content: space-between;
+        }
+        
+        .container.show-signup .login-form {
+            left: -100%;
+        }
+        
+        .container.show-signup .signup-form {
+            left: 0;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+        }
+        
+        input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            color: #764ba2;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .secondary-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .toggle {
+            text-align: center;
+            margin-top: 15px;
+            color: white;
+        }
+        
+        .toggle a {
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .toggle a:hover {
+            text-decoration: underline;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+        
+        @media (max-height: 700px) {
+            .container {
+                min-height: 380px;
+            }
+            .container.show-signup {
+                min-height: 480px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="form-container">
+            <!-- Login Form -->
+            <form class="form login-form">
+                <div>
+                    <h1>Login</h1>
+                    <div class="input-group">
+                        <input type="text" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                </div>
+                <div>
+                    <div class="button-group">
+                        <button type="submit">Login</button>
+                    </div>
+                    <p class="toggle">Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
+                </div>
+            </form>
+            
+            <!-- Signup Form -->
+            <form class="form signup-form">
+                <div>
+                    <h1>Sign Up</h1>
+                    <div class="input-group">
+                        <input type="text" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" placeholder="Password" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" placeholder="Phone Number" required>
+                    </div>
+                </div>
+                <div>
+                    <div class="button-group">
+                        <button type="submit">Sign Up</button>
+                        <button type="button" class="secondary-btn" id="backToLogin">Login Instead</button>
+                    </div>
+                    <p class="toggle">Already have an account? <a href="#" id="showLogin">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const showSignup = document.getElementById('showSignup');
+        const showLogin = document.getElementById('showLogin');
+        const backToLogin = document.getElementById('backToLogin');
+        
+        // Function to calculate and set proper height
+        function setContainerHeight() {
+            const activeForm = container.classList.contains('show-signup') 
+                ? document.querySelector('.signup-form') 
+                : document.querySelector('.login-form');
+            
+            // Reset to auto to get natural height
+            container.style.height = 'auto';
+            
+            // Get the calculated height
+            const height = activeForm.scrollHeight + 60; // Adding padding
+            
+            // Set the new height
+            container.style.height = `${height}px`;
+        }
+        
+        // Set initial height
+        setContainerHeight();
+        
+        // Window resize handler
+        window.addEventListener('resize', setContainerHeight);
+        
+        // Form toggle handlers
+        function showForm(isSignup) {
+            container.classList.toggle('show-signup', isSignup);
+            setContainerHeight();
+        }
+        
+        showSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            showForm(true);
+        });
+        
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showForm(false);
+        });
+        
+        backToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showForm(false);
+        });
+    </script>
+</body>
+</html>
