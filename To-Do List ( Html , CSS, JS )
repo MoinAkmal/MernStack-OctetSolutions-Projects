@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List </title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+         margin: 0;
+    }
+    :root {
+        --primary-color: #1C1D20;
+        --secondary-color: #4A4D57;
+        --accent-color: #00FFC4;
+        --background : #101114;
+        --text-color : #F9F9F9;
+    }
+    *{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        background-color: var(--primary-color);
+        text-align: center;
+       padding-top: 20px;
+        min-height : 100vh; 
+    }
+    .input-container {
+    margin: 25px;
+    padding: 20px;
+    }
+    h1{
+        color: var(--accent-color);
+    }
+    input[type="text"] {
+        width: 400px;
+        padding: 10px;
+        border: none;
+        border-radius: 20px;
+        font-size: 16px;
+        border: #00FFC4 2px solid;
+    }
+    #taskInput:focus {
+        outline: none;
+        border-color: #00FFC4;
+    }
+    #add-btn{
+        background-color: #00FFC4;
+        color: #1C1D20;
+        height: 41px;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 16px;
+        cursor: pointer;
+        position: absolute;
+        right:  500px;
+    }
+
+ #taskList {
+        list-style: none;
+        padding: 0;
+        margin: 20px auto;
+        max-width: 600px;
+    }
+    .task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--secondary-color);
+    padding: 10px 20px;
+    border-radius: 13px;
+    margin-bottom: 10px;
+}
+
+    .task-checkbox {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        accent-color: #00FFC4;
+        cursor: pointer;
+    }
+    .task-text {
+    flex-grow: 1;
+    color: var(--text-color);
+    margin-left: 10px;
+}
+   .edit-btn, .delete-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+  input[type="checkbox"]:checked ~ .task-text {
+        text-decoration: line-through;
+        color: #888;
+  }
+</style>
+<body>
+    <div class="container">
+        <h1> 📝 To-Do List </h1>
+        <div class="input-container">
+            <input type="text" id="taskInput" placeholder="Enter task here" />
+            <button id="add-btn" onclick="addtask()"> Add Task </button>
+        </div>
+        <ul id="taskList">
+            <!-- <li class="task" > 
+                <input type="checkbox" class="task-checkbox">
+                <span class="task-text">Task1</span>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
+            </li> -->
+        </ul>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById('taskInput'); 
+        const addBtn = document.getElementById('add-btn');
+        const taskList = document.getElementById('taskList');
+        
+        // First initialize null for currentlyEditedTask
+        let currentlyEditedTask = null;
+
+        addBtn.addEventListener('click', function (){
+          
+        // Check if the input is empty
+        if(taskInput.value ==="") 
+            {
+             alert("Please enter a task.");
+             return;
+            }
+        
+        // If currentlyEditedTask is not null, it means we are editing an existing task
+         if(currentlyEditedTask) {
+                const EditTaskText = currentlyEditedTask.querySelector('.task-text');
+                EditTaskText.textContent = taskInput.value;
+                currentlyEditedTask = null;
+                taskInput.value ="";
+                return;
+            } 
+
+        // Create a new list item
+            const taskListItem = document.createElement('li');
+            taskListItem.className = 'task';
+            taskListItem.innerHTML = `
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">${taskInput.value}</span>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>`;
+
+            // Append the new task to the task list
+            taskList.appendChild(taskListItem);
+            taskInput.value =""; 
+        }
+        );
+
+        // Add event listeners for delete and edit buttons
+          taskList.addEventListener('click', function(event) {
+            const target = event.target;
+            if (target.classList.contains('delete-btn')){
+              target.parentElement.remove();
+            }
+            if (target.classList.contains('edit-btn')) {
+                const taskItem = target.parentElement;
+                taskInput.value = taskItem.querySelector('.task-text').textContent;
+                currentlyEditedTask = taskItem;
+          }
+        });
+    </script>
+</body>
+</html>
+
+//Impotant Notes:
+
+//1. why we are using querySelector here but not getElementByClass?
+// Solution : 
+
+// querySelector point to the first element that matches the specified selector, while getElementByClassName   
+//returns a live HTMLCollection of all elements with the specified class name.
+
+// Clarification: querySelector points only a single first element one by one while getElementByClassName points to all
+//the elements with the specified class name like an array.
